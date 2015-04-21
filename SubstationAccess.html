@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Eversource Substation Access</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+  // <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+  // <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+
+  <link rel="stylesheet" href="css/Eversource.min.css" />
+  <link rel="stylesheet" href="css/themes/jquery.mobile.icons.min.css" />
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" /> 
+  
+  <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script> 
+  <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  
+  <script src="js/app.js"></script>
+  <!-- // <script type="text/javascript" src="js/router.js"></script> -->
+
+  <script type="text/javascript" src="js/ewebrtc-sdk.js"></script>    
+<!--  <script type="text/javascript" src="js/ewebrtc-sdk.min.js"></script> 
+ -->
+  <!-- // <script type="text/javascript" src="js/utils.js"></script> -->
+  <!-- // <script type="text/javascript" src="js/sample.js"></script> -->
+  <!-- <script type="text/javascript" src="js/common.js"></script> -->
+
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700|Open+Sans:300,400,400italic,700" rel="stylesheet" type="text/css">
+
+  <style type="text/css">
+	img.fullscreen {
+		max-width: 100%;
+		max-height: 100%;
+	}
+	img.logo {
+		display: block;
+		max-width: 75%;
+		max-height: 75%;
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+
+	h1.center{
+		text-align: center;
+		color: #00ae42;
+	}
+
+	.blue_text{
+		text-align: center;
+		color: #00a8e1;
+	}
+
+	.green_text{
+		text-align: center;
+		color: #00ae42;
+	}
+
+	#blue_bg{
+		background-color: #00a8e1 !important;
+	}
+	#green_bg{
+		background-color: #00ae42 !important;
+	}
+	.showthis { 
+		visibility: visible; 
+	}
+
+	.hidethis {
+		visibility: hidden; 
+	}
+
+}
+	
+  </style>
+
+
+</head>
+<body>
+
+<script type="text/javascript">
+
+var phone, accessToken, myDHS, myDHSURL = 'https://127.0.0.1:9001';
+    
+//Get DHS Configuration Information
+var xhrConfig = new XMLHttpRequest();
+xhrConfig.open('GET', myDHSURL + "/config/");
+xhrConfig.onreadystatechange = function() {
+if (xhrConfig.readyState == 4) {
+    if (xhrConfig.status == 200) {
+    	console.log("Hello world!!");
+        console.log(xhrConfig.responseText);
+        myDHS = JSON.parse(xhrConfig.responseText);
+    } else {
+        console.log(xhrConfig.responseText);
+    }
+}
+}
+xhrConfig.send();
+    
+   
+</script>
+<!-- main -->
+<div data-role="page" id="home" data-theme="b">
+<header data-role="header">
+	<img class="logo" src="logo.png">
+</header>
+<article data-role="content">
+	<h1 class="center">Substation Access</h1>
+	<br/>
+	<ul id="main" data-role="listview">
+	<li>
+		<a href="#chooseCo">
+		<h1>Check In</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#checkOut">
+		<h1>Check Out</h1>
+		</a>
+	</li>
+	</ul>
+
+	<br/><br/><br/>
+	<p>
+	<h3 id=pleaseHold class="blue_text hidethis">Connecting you to an operator now. <br/> <br/>
+	Please click the Allow button in the pop-up window to allow microphone use.</h3>
+	<button id="holdCallButton" class="hidethis" onclick="hangUpCall()">HOLD CALL</button>
+	<button id="muteCallButton" class="hidethis" onclick="hangUpCall()">MUTE CALL</button>
+	<button id="hangupCallButton" class="hidethis" onclick="hangUpCall()">HANGUP CALL</button>
+	</p>
+</article>
+<footer id="green_bg" data-role="footer" data-position="fixed">
+	<nav data-role="navbar" >
+		<ul>
+			<li><a id="operator_btn" onclick="createPhoneObject()" data-icon="phone">Operator</a></li>
+		</ul>
+	</nav>
+</footer>
+</div> <!-- main -->
+
+<!-- chooseCo -->
+<div data-role="page" id="chooseCo" data-theme="b">
+<header data-role="header">
+	<img class="logo" src="logo.png">
+</header>
+<article data-role="content">
+	<h1 class="center">Substation Check In</h1>
+	<br/>
+	<h4>Checking into a legacy Northeast Utilities or legacy NSTAR substation?</h4>
+	<br/>
+	<ul id="footer_color" data-role="listview">
+	<li>
+		<a href="#checkIn">
+		<h1>Northeast Utilities</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#checkIn">
+		<h1>NSTAR</h1>
+		</a>
+	</li>
+	</ul>
+</article>
+<footer id="green_bg" data-role="footer" data-position="fixed">
+	<nav data-role="navbar" >
+		<ul>
+			<li><a href="#home" data-icon="home">Home</a></li>
+			<li><a href="#operator" data-icon="phone">Operator</a></li>
+			<li><a href="#cancelCheckIn" data-icon="delete">Cancel</a></li>
+		</ul>
+	</nav>
+</footer>
+</div> <!-- chooseCo -->
+
+
+<div data-role="page" id="checkIn" data-theme="b">
+<header data-role="header">
+	<img class="logo" src="logo.png">
+</header>
+<article data-role="content">
+	<h1 class="center">Substation Check In</h1>
+	<h4>Select the substation location:</h4>
+	<ul id="footer_color" data-role="listview" data-filter="true">
+	<li>
+		<a href="#setLocation">
+		<h1>Wilton</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Seymour</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Oak Street</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Prospect</h1>
+		</a>
+	</li>
+
+	<li>
+		<a href="#setLocation">
+		<h1>Falls Village</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Garvins Falls</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Ocean Road</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Scobie Pond</h1>
+		</a>
+	</li>
+
+
+	<li>
+		<a href="#setLocation">
+		<h1>Danielson</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Devon</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Middle Turnpike</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Millstone</h1>
+		</a>
+	</li>
+
+	<li>
+		<a href="#setLocation">
+		<h1>Norwalk Harbor</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Goodwin</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Waterside</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Montville</h1>
+		</a>
+	</li>
+
+	<li>
+		<a href="#setLocation">
+		<h1>Rood</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Torrington</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Univerisity of Connecticut</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Farmington</h1>
+		</a>
+	</li>
+
+	<li>
+		<a href="#setLocation">
+		<h1>Silver</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>Windsor</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>River Road</h1>
+		</a>
+	</li>
+	<li>
+		<a href="#setLocation">
+		<h1>3rd Street (Third Street)</h1>
+		</a>
+	</li>
+	</ul>
+</article>
+<footer class="green_bg" data-role="footer" data-position="fixed">
+	<nav data-role="navbar" >
+		<ul>
+			<li><a href="#home" data-icon="home">Home</a></li>
+			<li><a href="#operator" data-icon="phone">Operator</a></li>
+			<li><a href="#cancelCheckIn" data-icon="delete">Cancel</a></li>
+		</ul>
+	</nav>
+</footer>
+</div> <!-- checkIn -->
+
+<div data-role="page" id="checkOut">
+<header data-role="header">
+	<img class="logo" src="logo.png">
+	<!--  
+	<a href="#">Back</a>
+	<a href="#">Next</a>
+	-->
+</header>
+<article data-role="content">
+	<h1 class="center">Substation Check Out</h1>
+	<br/>	
+</article>
+<footer class="green_bg" data-role="footer" data-position="fixed">
+	<nav data-role="navbar" >
+		<ul>
+			<li><a href="#home" data-icon="home">Home</a></li>
+			<li><a href="#operator" data-icon="phone">Operator</a></li>
+			<li><a href="#cancelCheckOut" data-icon="delete">Cancel</a></li>
+		</ul>
+	</nav>
+</footer>
+</div> <!-- checkOut -->
+
+<div data-role="page" id="setLocation" data-theme="d">
+<header data-role="header">
+	<img class="logo" src="logo.png">
+</header>
+<article data-role="content">
+	<h1 class="center">Substation Check In</h1>
+	<br/>
+	<div data-role="main" class="ui-content">
+    	<form method="post" action="demoform.asp">
+      		<div class="ui-field-contain">
+        	<label for="empID">Employee ID:</label>
+        	<input type="text" name="fullname" id="fullname" placeholder="7 digits">       
+      		</div>
+      		<input type="submit" data-inline="true" value="Lookup">
+    	</form>
+  	</div>
+</article>
+<footer data-role="footer" data-position="fixed">
+	<nav data-role="navbar" >
+		<ul>
+			<li><a href="#home" data-icon="home">Home</a></li>
+			<li><a href="#" data-icon="phone">Operator</a></li>
+			<li><a href="#cancelCheckOut" data-icon="delete">Cancel</a></li>
+		</ul>
+	</nav>
+</footer>
+</div> <!-- setLocation -->
+
+<!-- Operator -->
+<div data-role="page" id="operator" data-theme="b">
+<header data-role="header">
+	<img class="logo" src="logo.png">
+</header>
+<article data-role="content">
+	<br/>
+	<h1 class="center">Please hold while we connect you to an Operator...</h1>
+	<br/>
+
+<!-- Step 3a: HTML Make and Answer Call UI -->
+<p>
+<!-- <input type="text" id="callToInput" placeholder="Account ID/Telephone" hidden>
+<button id="makeCallButton" onclick="makeCall()" hidden>Make Call alice@yourdomain.com or 1234567890</button>
+<button id="answerCallButton" onclick="answerCall()" hidden>Answer Call</button> -->
+<audio id="local" style="display:none"></audio>
+<audio id="remote" style="display:none"></audio>
+</p>
+
+<!-- JavaScript will go here -->  
+
+<!-- Step 1b: Configure Phone Objects and Register Events-->
+
+<!-- <script type ="text/javascript" src="js/ewebrtc-sdk.min.js"></script>    -->
+
+</article>
+
+<footer id="green_bg" data-role="footer" data-position="fixed">
+	<nav data-role="navbar" >
+		<ul>
+			<li><a href="#home" data-icon="home">Home</a></li>
+			<li><a href="#cancelOperator" data-icon="delete">Cancel</a></li>
+		</ul>
+	</nav>
+</footer>
+<script type="text/javascript">
+	console.log("calling createPhoneObject()");
+	createPhoneObject();
+	// createAccessToken();
+	// var callToInput="16095588307";
+	// makeCall();
+</script>
+</div> <!-- operator -->
+
+<!-- cancelCheckIn -->
+<div data-role="page" id="cancelCheckIn" data-theme="b">
+<header data-role="header">
+	<img class="logo" src="logo.png">
+</header>
+<article data-role="content">
+	<br/>
+	<h1 class="center">Substation check in cancelled</h1>
+	<br/>
+</article>
+<footer id="green_bg" data-role="footer" data-position="fixed">
+	<nav data-role="navbar" >
+		<ul>
+			<li><a href="#home" data-icon="home">Home</a></li>
+			<li><a href="#operator" data-icon="phone">Operator</a></li>
+		</ul>
+	</nav>
+</footer>
+</div> <!-- cancelCheckIn -->
+
+<!-- cancelCheckOut -->
+<div data-role="page" id="cancelCheckOut" data-theme="b">
+<header data-role="header">
+	<img class="logo" src="logo.png">
+</header>
+<article data-role="content">
+	<br/>
+	<h1 class="center">Substation check out cancelled</h1>
+	<br/>
+</article>
+<footer id="green_bg" data-role="footer" data-position="fixed">
+	<nav data-role="navbar" >
+		<ul>
+			<li><a href="#home" data-icon="home">Home</a></li>
+			<li><a href="#operator" data-icon="phone">Operator</a></li>
+		</ul>
+	</nav>
+</footer>
+</div> <!-- cancelCheckOut -->
+
+<!-- cancelOperator -->
+<div data-role="page" id="cancelOperator" data-theme="b">
+<header data-role="header">
+	<img class="logo" src="logo.png">
+</header>
+<article data-role="content">
+	<br/>
+	<h1 class="center">Contact operator cancelled</h1>
+	<br/>
+</article>
+<footer id="green_bg" data-role="footer" data-position="fixed">
+	<nav data-role="navbar" >
+		<ul>
+			<li><a href="#home" data-icon="home">Home</a></li>
+			<li><a href="#operator" data-icon="phone">Operator</a></li>
+		</ul>
+	</nav>
+</footer>
+</div> <!-- cancelOperator -->
+
+</body>
+</html>
